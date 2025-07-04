@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+    <link
+      rel="icon"
+      href="/favicon-192x192.png"
+      sizes="192x192"
+      type="image/png"
+    />
+    <meta name="theme-color" content="#000000" />
+    <title>Login</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right, #1e3c72, #2a5298);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .login-container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      .login-container h2 {
+        margin-bottom: 1.5rem;
+        color: #2a5298;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #2a5298;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #1e3c72;
+      }
+
+      @media (max-width: 500px) {
+        .login-container {
+          margin: 0 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="loginButton">Login</button>
+    </div>
+
+    <script>
+      document
+        .getElementById("loginButton")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const message = document.getElementById("message");
+
+          if (!email || !password) {
+            message.textContent = "Please fill in both fields.";
+            return;
+          }
+
+          try {
+            const response = await fetch("http://localhost:3000/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              message.style.color = "green";
+              message.textContent =
+                "Login successful! Welcome, " + result.user.email;
+            } else {
+              message.style.color = "red";
+              message.textContent = result.error || "Login failed.";
+            }
+          } catch (err) {
+            console.error("Error:", err);
+            message.style.color = "red";
+            message.textContent = "Server error. Try again later.";
+          }
+        });
+    </script>
+  </body>
+</html>
