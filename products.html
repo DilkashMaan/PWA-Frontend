@@ -74,7 +74,7 @@
     </div>
 
     <script>
-      const apiURL = "https://pwa-backend-rw9x.onrender.com/products"; 
+      const apiURL = "https://pwa-backend-rw9x.onrender.com/products";
       async function loadProducts() {
         try {
           const res = await fetch(apiURL);
@@ -93,7 +93,9 @@
             }" />
             <div class="product-details">
               <div class="product-title">${product.name}</div>
-              <div class="product-price">$${product.price.toFixed(2)}</div>
+              <div class="product-price">$${Number(product.price).toFixed(
+                2
+              )}</div>
               <div class="product-description">${product.description}</div>
             </div>
           `;
