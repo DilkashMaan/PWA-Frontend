@@ -111,9 +111,7 @@
             const result = await response.json();
 
             if (response.ok) {
-              message.style.color = "green";
-              message.textContent =
-                "Login successful! Welcome, " + result.user.email;
+              window.location.href = "landing.html";
             } else {
               message.style.color = "red";
               message.textContent = result.error || "Login failed.";
