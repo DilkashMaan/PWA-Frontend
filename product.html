@@ -1,109 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Details</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f0f2f5;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f0f2f5;
+      }
 
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
 
-    .product-image {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
+      .product-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
 
-    .product-title {
-      font-size: 28px;
-      margin-top: 20px;
-    }
+      .product-title {
+        font-size: 28px;
+        margin-top: 20px;
+      }
 
-    .product-price {
-      font-size: 22px;
-      color: #1a73e8;
-      margin: 10px 0;
-    }
+      .product-price {
+        font-size: 22px;
+        color: #1a73e8;
+        margin: 10px 0;
+      }
 
-    .product-description {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 30px;
-    }
+      .product-description {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 30px;
+      }
 
-    .actions {
-      display: flex;
-      gap: 20px;
-    }
+      .actions {
+        display: flex;
+        gap: 20px;
+      }
 
-    .btn {
-      padding: 12px 24px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+      .btn {
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
 
-    .buy {
-      background-color: #28a745;
-      color: white;
-    }
+      .buy {
+        background-color: #28a745;
+        color: white;
+      }
 
-    .cart {
-      background-color: #ffc107;
-      color: black;
-    }
-  </style>
-</head>
-<body>
+      .cart {
+        background-color: #ffc107;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img id="productImage" class="product-image" src="" alt="Product Image" />
+      <div class="product-title" id="productTitle">Loading...</div>
+      <div class="product-price" id="productPrice"></div>
+      <div class="product-description" id="productDescription"></div>
+      <div class="actions">
+        <button class="btn buy">Buy Now</button>
+        <button class="btn cart">Add to Cart</button>
+      </div>
+    </div>
 
-<div class="container">
-  <img id="productImage" class="product-image" src="" alt="Product Image" />
-  <div class="product-title" id="productTitle">Loading...</div>
-  <div class="product-price" id="productPrice"></div>
-  <div class="product-description" id="productDescription"></div>
-  <div class="actions">
-    <button class="btn buy">Buy Now</button>
-    <button class="btn cart">Add to Cart</button>
-  </div>
-</div>
+    <script>
+      const token = localStorage.getItem("token");
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("id");
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const productId = params.get("id");
+      const apiURL = `https://pwa-backend-rw9x.onrender.com/products/${productId}`;
 
-  const apiURL = `https://pwa-backend-rw9x.onrender.com/products/${productId}`;
+      async function loadProduct() {
+        try {
+          const res = await fetch(apiURL, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-  async function loadProduct() {
-    try {
-      const res = await fetch(apiURL);
-      const product = await res.json();
+          if (!res.ok) {
+            throw new Error("Unauthorized or failed to fetch product");
+          }
 
-      document.getElementById("productTitle").textContent = product.name;
-      document.getElementById("productPrice").textContent = `$${Number(product.price).toFixed(2)}`;
-      document.getElementById("productDescription").textContent = product.description;
-      document.getElementById("productImage").src = product.image_url;
-      document.getElementById("productImage").alt = product.name;
-    } catch (err) {
-      console.error("Failed to load product", err);
-    }
-  }
+          const product = await res.json();
 
-  loadProduct();
-</script>
+          document.getElementById("productTitle").textContent = product.name;
+          document.getElementById("productPrice").textContent = `$${Number(
+            product.price
+          ).toFixed(2)}`;
+          document.getElementById("productDescription").textContent =
+            product.description;
+          document.getElementById("productImage").src = product.image_url;
+          document.getElementById("productImage").alt = product.name;
+        } catch (err) {
+          console.error("Failed to load product", err);
+          document.getElementById("productTitle").textContent =
+            "Failed to load product. Please log in.";
+        }
+      }
 
-</body>
+      loadProduct();
+    </script>
+  </body>
 </html>

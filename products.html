@@ -75,9 +75,22 @@
 
     <script>
       const apiURL = "https://pwa-backend-rw9x.onrender.com/products";
+      const token = localStorage.getItem("token");
+
       async function loadProducts() {
         try {
-          const res = await fetch(apiURL);
+          const res = await fetch(apiURL, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error("Unauthorized or failed to fetch products");
+          }
+
           const products = await res.json();
 
           const container = document.getElementById("productsContainer");
@@ -88,24 +101,28 @@
             card.className = "product-card";
 
             card.innerHTML = `
-  <a href="product.html?id=${
-    product.id
-  }" style="text-decoration: none; color: inherit;">
-    <img src="${product.image_url}" class="product-image" alt="${
+          <a href="product.html?id=${
+            product.id
+          }" style="text-decoration: none; color: inherit;">
+            <img src="${product.image_url}" class="product-image" alt="${
               product.name
             }" />
-    <div class="product-details">
-      <div class="product-title">${product.name}</div>
-      <div class="product-price">$${Number(product.price).toFixed(2)}</div>
-      <div class="product-description">${product.description}</div>
-    </div>
-  </a>
-`;
+            <div class="product-details">
+              <div class="product-title">${product.name}</div>
+              <div class="product-price">$${Number(product.price).toFixed(
+                2
+              )}</div>
+              <div class="product-description">${product.description}</div>
+            </div>
+          </a>
+        `;
 
             container.appendChild(card);
           });
         } catch (err) {
           console.error("Error loading products:", err);
+          document.getElementById("productsContainer").innerHTML =
+            "<p style='padding:20px;'>Failed to load products. Please login.</p>";
         }
       }
 
