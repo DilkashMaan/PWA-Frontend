@@ -158,6 +158,7 @@
           const product = await res.json();
 
           // Assume MRP is price * 2.5 just for demo purposes
+          const rawPrice = Number(product.price);
           const mrp = product.price * 2.5;
           const discount = Math.round(((mrp - product.price) / mrp) * 100);
 
