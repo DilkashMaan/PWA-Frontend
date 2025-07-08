@@ -96,6 +96,10 @@
         border-radius: 4px;
       }
 
+      .wishlist {
+        background-color: #e7e7e7;
+        color: #333;
+      }
       .add-to-cart {
         background-color: #ffd814;
         color: #111;
@@ -130,6 +134,7 @@
         <div class="buttons">
           <button class="btn buy-now">Buy Now</button>
           <button class="btn add-to-cart">Add to Cart</button>
+          <button class="btn wishlist">Add to Wishlist</button>
         </div>
       </div>
     </div>
@@ -210,12 +215,44 @@
         }
       }
 
+      async function addToWishlist() {
+        try {
+          const res = await fetch(
+            "https://pwa-backend-rw9x.onrender.com/wishlist",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                productId: productId,
+              }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("Item added to wishlist!");
+          } else {
+            alert(`Failed to add to wishlist: ${data.message}`);
+          }
+        } catch (error) {
+          console.error("Error adding to wishlist:", error);
+          alert("Something went wrong while adding to wishlist.");
+        }
+      }
+
       document
         .querySelector(".add-to-cart")
         .addEventListener("click", addToCart);
       document.querySelector(".buy-now").addEventListener("click", () => {
         alert("Proceeding to checkout...");
       });
+      document
+        .querySelector(".wishlist")
+        .addEventListener("click", addToWishlist);
 
       loadProduct();
     </script>
