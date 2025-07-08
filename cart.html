@@ -72,7 +72,7 @@
       if (!token || !userId) {
         cartItemsContainer.innerHTML = `<div class="empty">You must be logged in to view your cart.</div>`;
       } else {
-        fetch(`https://pwa-backend-rw9x.onrender.com/carts/${userId}`, {
+        fetch(`https://pwa-backend-rw9x.onrender.com/cart/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
