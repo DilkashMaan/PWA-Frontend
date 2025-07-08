@@ -123,7 +123,7 @@
 
             if (response.ok) {
               localStorage.setItem("token", result.token);
-              localStorage.setItem("userId", result.userId);
+              localStorage.setItem("userId", result.user.id);
               window.location.href = "landing.html";
             } else {
               message.style.color = "red";
