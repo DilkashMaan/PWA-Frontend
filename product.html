@@ -162,15 +162,18 @@
 
           const product = await res.json();
 
-          // Assume MRP is price * 2.5 just for demo purposes
+          // Ensure price is a number and calculate MRP
           const rawPrice = Number(product.price);
-          const mrp = product.price * 2.5;
-          const discount = Math.round(((mrp - product.price) / mrp) * 100);
+          if (isNaN(rawPrice)) {
+            throw new Error("Invalid price value");
+          }
+          const mrp = rawPrice * 2.5;
+          const discount = Math.round(((mrp - rawPrice) / mrp) * 100);
 
           document.getElementById("productTitle").textContent = product.name;
           document.getElementById(
             "productPrice"
-          ).textContent = `₹${product.price.toFixed(2)}`;
+          ).textContent = `₹${rawPrice.toFixed(2)}`;
           document.getElementById(
             "productMRP"
           ).textContent = `M.R.P: ₹${mrp.toFixed(2)}`;
