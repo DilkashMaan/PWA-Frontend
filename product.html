@@ -87,6 +87,8 @@
 
       const apiURL = `https://pwa-backend-rw9x.onrender.com/products/${productId}`;
 
+      let currentProduct = null;
+
       async function loadProduct() {
         try {
           const res = await fetch(apiURL, {
@@ -102,6 +104,7 @@
           }
 
           const product = await res.json();
+          currentProduct = product;
 
           document.getElementById("productTitle").textContent = product.name;
           document.getElementById("productPrice").textContent = `$${Number(
@@ -118,7 +121,62 @@
         }
       }
 
+      function addToCart(product) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Check if already in cart
+        const index = cart.findIndex((item) => item.id === product.id);
+        if (index > -1) {
+          cart[index].quantity += 1;
+        } else {
+          cart.push({ ...product, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("Added to cart!");
+      }
+
+      document
+        .getElementById("addToCartBtn")
+        .addEventListener("click", function () {
+          if (currentProduct) {
+            addToCart(currentProduct);
+          }
+        });
+
       loadProduct();
+      // async function loadProduct() {
+      //   try {
+      //     const res = await fetch(apiURL, {
+      //       method: "GET",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     });
+
+      //     if (!res.ok) {
+      //       throw new Error("Unauthorized or failed to fetch product");
+      //     }
+
+      //     const product = await res.json();
+
+      //     document.getElementById("productTitle").textContent = product.name;
+      //     document.getElementById("productPrice").textContent = `$${Number(
+      //       product.price
+      //     ).toFixed(2)}`;
+      //     document.getElementById("productDescription").textContent =
+      //       product.description;
+      //     document.getElementById("productImage").src = product.image_url;
+      //     document.getElementById("productImage").alt = product.name;
+      //   } catch (err) {
+      //     console.error("Failed to load product", err);
+      //     document.getElementById("productTitle").textContent =
+      //       "Failed to load product. Please log in.";
+      //   }
+      // }
+
+      // loadProduct();
     </script>
   </body>
 </html>
