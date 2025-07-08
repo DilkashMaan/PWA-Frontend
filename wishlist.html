@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Wishlist</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+
+      .wishlist-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .wishlist-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        align-items: center;
+      }
+
+      .wishlist-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-info {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .item-info img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .item-info .item-details {
+        flex: 1;
+      }
+
+      .item-details h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .item-details p {
+        color: #777;
+        font-size: 14px;
+        margin: 5px 0;
+      }
+
+      .item-price {
+        font-size: 18px;
+        color: #b12704;
+        font-weight: bold;
+      }
+
+      .item-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .remove-btn {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .view-btn {
+        background-color: #1abc9c;
+        color: white;
+      }
+
+      .empty-message {
+        text-align: center;
+        font-size: 18px;
+        color: #888;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wishlist-container">
+      <h2>Your Wishlist</h2>
+      <div id="wishlistItems"></div>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+
+      const wishlistContainer = document.getElementById("wishlistItems");
+
+      if (!token || !userId) {
+        wishlistContainer.innerHTML = `<div class="empty-message">You must be logged in to view your wishlist.</div>`;
+      } else {
+        fetch(`https://pwa-backend-rw9x.onrender.com/wishlist/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Fetch failed");
+
+            if (data.length === 0) {
+              wishlistContainer.innerHTML = `<div class="empty-message">Your wishlist is empty.</div>`;
+              return;
+            }
+
+            data.forEach((item) => {
+              const div = document.createElement("div");
+              div.classList.add("wishlist-item");
+              div.innerHTML = `
+                <div class="item-info">
+                  <img src="${item.image_url}" alt="${item.name}">
+                  <div class="item-details">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <div class="item-price">₹${item.price}</div>
+                  </div>
+                </div>
+                <div class="item-actions">
+                  <button class="btn view-btn" onclick="viewProduct(${item.product_id})">View</button>
+                  <button class="btn remove-btn" onclick="removeFromWishlist(${item.id})">Remove</button>
+                </div>
+              `;
+              wishlistContainer.appendChild(div);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            wishlistContainer.innerHTML = `<div class="empty-message">Failed to load wishlist.</div>`;
+          });
+      }
+
+      
+      function viewProduct(productId) {
+        window.location.href = `product.html?id=${productId}`;
+      }
+
+      // Remove Product from Wishlist
+      async function removeFromWishlist(wishlistId) {
+        try {
+          const res = await fetch(
+            `https://pwa-backend-rw9x.onrender.com/wishlist/${wishlistId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("Item removed from wishlist");
+            location.reload(); 
+          } else {
+            alert("Failed to remove item from wishlist");
+          }
+        } catch (error) {
+          console.error("Error removing from wishlist:", error);
+          alert("Something went wrong while removing from wishlist.");
+        }
+      }
+    </script>
+  </body>
+</html>
